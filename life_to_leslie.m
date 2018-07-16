@@ -1,4 +1,4 @@
-function [leslie_matrix, ages, alpha1_AL_lambda] = life_to_leslie(file, cell_range)
+function [leslie_matrix, ages, alpha1_AL] = life_to_leslie(file, cell_range)
 %Input - a life table in a .csv or an .xlsx file in the form of an ages x 3 matrix. Column 1 contains the ages, Column 2 contains survival, Column 3 contains fecundity.  
 %Output - corresponding Leslie Matrix
 filename = file; %assign the file to a variable
@@ -15,21 +15,14 @@ for i = 1:ages-1
    leslie_matrix(i+1,i) = life_table_m(i,2); %set the diagonal (beginning at (2,1)) equal to the age-dependent survival coefficients
 end
 
-alpha1_AL_lambda = zeros(1,3); %initialize a matrix to record life history traits
+alpha1_AL = zeros(1,2); %initialize a matrix to record life history traits
 
 age = 1;
 while (isequal(life_table_m(age,3),0))
     age = age +1 ;
 end
-alpha1_AL_lambda(1) = age-1;
-alpha1_AL_lambda(2) = ages-alpha1_AL_lambda(1)+1;
+alpha1_AL(1) = age-1;
+alpha1_AL(2) = ages-alpha1_AL(1)+1;
 
-lambda = eig(leslie_matrix);
-if lambda(1)> 0
-    scaling = lambda(1);
-else
-    scaling = lambda(2);
-end
 
-alpha1_AL_lambda(3) = scaling;
 
