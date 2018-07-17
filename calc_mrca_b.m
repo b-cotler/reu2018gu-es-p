@@ -1,4 +1,4 @@
-function [mrca, complete_genealogy, coal_events] = calc_mrca_b(genealogy_m, leslie_matrix, age_dist_m)
+function [mrca, complete_genealogy, coal_events, age_zero_counter] = calc_mrca_b(genealogy_m, leslie_matrix, age_dist_m)
 
 %Inputs:
 %1. genealogy_m - a number_generations x lineage_count x 2 matrix. At the
@@ -46,6 +46,10 @@ coal_events = -1*ones(length(lineages)-1,3);
 %Create a counter to measure the time to most recent common ancestor (MRCA)
 time_count = 1; 
 
+%create a counter for age zero individuals to better understand
+%polymorphism/mutation
+age_zero_counter = zeros(1,lineages); 
+
 for g = generations:-1:2 %iterate over the generations
     
     %Establish vectors to record the bounds of each age class for each
@@ -63,6 +67,7 @@ for g = generations:-1:2 %iterate over the generations
         %consider the case where the individual at generation g and lineage
         % k is age zero and must pick a parent. 
         if genealogy_m(g,k,2) == 0 
+            age_zero_counter(k) = age_zero_counter(k)+1;
             fecundities = age_dist_m(:,g-1).*transpose(leslie_matrix(1,:)); %create a vector of expected number of offspring
             scaling = sum(fecundities); % determines the value to scale the fecundities
             fecundities = fecundities./scaling; %scales the fecundities vector so the sum is one
