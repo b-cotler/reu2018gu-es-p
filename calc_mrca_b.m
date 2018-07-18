@@ -48,7 +48,7 @@ time_count = 1;
 
 %create a counter for age zero individuals to better understand
 %polymorphism/mutation
-age_zero_counter = zeros(1,lineages); 
+age_zero_counter = zeros(1,length(lineages)); 
 
 for g = generations:-1:2 %iterate over the generations
     
