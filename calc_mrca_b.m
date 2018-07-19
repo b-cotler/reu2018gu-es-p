@@ -54,11 +54,13 @@ for g = generations:-1:2 %iterate over the generations
     
     %Establish vectors to record the bounds of each age class for each
     %generation
-    options_lower = [1]; %initializes lower bound vector for each age class
-    options_upper = [age_dist_m(1,g-1)]; %initializes upper bound vector for each age class
-    for a = 2:size(age_dist_m)
-        options_lower = [options_lower sum(age_dist_m(1:a-1,g-1))+1]; %concatenates vector of lower bounds
-        options_upper = [options_upper sum(age_dist_m(1:a,g-1))]; %concatenates vector of upper bounds
+    options_lower = zeros(1,size(age_dist_m,1));
+    options_upper = zeros(1,size(age_dist_m,1));
+    options_lower(1) = 1; %initializes lower bound vector for each age class
+    options_upper(1) = age_dist_m(1,g-1); %initializes upper bound vector for each age class
+    for a = 2:size(age_dist_m,1)
+        options_lower(a) = sum(age_dist_m(1:a-1,g-1))+1; %concatenates vector of lower bounds
+        options_upper(a) = sum(age_dist_m(1:a,g-1)); %concatenates vector of upper bounds
     end
     %iterate over each lineage
     for q = 1:length(lineages) %iterate over the number of lineages
