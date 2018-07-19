@@ -115,6 +115,12 @@ no_mrca_zero = 0; % counter for number of times no MRCA was found
 
 mrca_zero = zeros(1,iterations); % allocate space for results
 
+%Creates a mutaton matrix to track possible mutation events
+
+%The first row contains the number of age zero individuals in the first lineage at time iter and 
+%the second row contains the number of age zer individuals in the second lineage at time iter. 
+%The third row contains the time to mrca because the number of age zero individuals will be smaller if an mrca is reached early in the lineage trace. "
+
 mutation_m = zeros(lineage_count+1, iterations);
 
 for iter=1:iterations
