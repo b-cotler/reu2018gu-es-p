@@ -6,7 +6,9 @@ function [indices] = terminal_indices_2(lineage_count, age_dist_m, age)
 %population of each age class over the number of generations
 %3. age -vector, index should be -1 if #lineage_count random individuals are to be
 %selected, or a given age >= 0 if #lineage_count individuals from that
-%specific age class are to be sampled.
+%specific age class are to be sampled. for example age = [1 0] will sample
+%one age 1 and one age 0 individual. age = [-1 -1 -1] will sample three
+%random age individuals. age = [0 0] will sample two age 0 individuals.
 
 %This function randomly selects indices in the final generation of the
 %demographic matrix to begin the lineage trace. If the age input is -1 it
