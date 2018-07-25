@@ -28,7 +28,6 @@ time = 1:number_generations; %creates a time vector using the set number of gene
 total_population_0 = sum(population_0); %calculates the total population at time = 0 by adding the values of population_0
 total_population_v = zeros(1, length(time)); %initializes a vector of total population values
 total_population_v(1) = total_population_0; %sets the first entry of the total population vector equal to the initial total population
-classes = length(population_0);
 %% Burn-In %%
 warning = 0;
 burn_in_m = zeros(length(population_0),burn_in_gens);
@@ -36,24 +35,6 @@ burn_in_m(:,1) = population_0;
 for i = 2:burn_in_gens
     burn_in_m(:,i) = round(leslie_matrix*burn_in_m(:,i-1));
     total_population_v(i) = sum(burn_in_m(:,i));
-%     if isequal(round(mod_lambda*1000)/1000,1)
-%         disp('SIZECHECK')
-%         if (isequal(total_population_v(i),total_population_v(i-1))==false)
-%             while total_population_v(i)>total_population_v(i-1)
-%             choice = randi(classes);
-%             if burn_in_m(choice,i) > 0
-%             place_holder = burn_in_m(choice,i)-1;
-%             burn_in_m(choice,i) = place_holder;
-%             disp(total_population_v(i)-total_population_v(i-1));
-%             end
-%             end
-%             while total_population_v(i)<total_population_v(i-1)
-%             choice = randi(classes);
-%             burn_in_m(choice,i) = burn_in_m(choice,i)+1;
-%             disp(total_population_v(i)-total_population_v(i-1));
-%             end
-%         end
-%     end
     if isequal(burn_in_m(:,i),burn_in_m(:,i-1)) && isequal(warning,0)
         fprintf("The Population reaches a steady state at burn-in t = %d \n", i);
         burn_in = false;
@@ -81,21 +62,7 @@ for i = 2:length(time)
     age_dist_m(:,i) = round(leslie_matrix*age_dist_m(:,i-1)); %applies the leslie matrix to the previous age distribution for each time step
    
     total_population_v(i) = sum(age_dist_m(:,i)); %adds the total population at time step i to the total population vector
-%     if isequal(round(mod_lambda*1000)/1000,1)
-%         disp('SIZECHECK')
-%         if (isequal(total_population_v(i),total_population_v(i-1))==false)
-%             while total_population_v(i)>total_population_v(i-1)
-%             choice = randi(classes);
-%             if age_dist_m(choice,i) > 0
-%             age_dist_m(choice,i) = age_dist_m(choice,i)-1;
-%             end
-%             end
-%             while total_population_v(i)<total_population_v(i-1)
-%             choice = randi(classes);
-%             age_dist_m(choice,i) = age_dist_m(choice,i)+1;
-%             end
-%         end
-%     end
+
 size_check_v = age_dist_m(:,i) > (2^50)*ones(size(age_dist_m,1),1); 
     if isequal(size_check_v,zeros(size(age_dist_m,1),1) == 0) && (isequal(warning2,0))
         fprintf("The Population is too large at t = %d \n",i); 
