@@ -4,11 +4,11 @@
 rng('shuffle'); % random seed for random number generator
 
 % declare main global variables for program
-total_pop_N = 500; % size of population for all age classes
+total_pop_N = 1000; % size of population for all age classes
 
-number_generations = 1000; % number of generations
+number_generations = 10; % number of generations
 
-burn_in_gens = 66; % number of generations for burn in of population growth
+burn_in_gens = 10000; % number of generations for burn in of population growth
 
 lineage_count = 2; % number of lineages to sample to determine time to MRCA 
 
@@ -26,7 +26,7 @@ fprintf('Initial total population size: %g\n\n', total_pop_N);
 %% open file with life table, get Leslie matrix for population growth %%
 
 % provide path name to life table file
-file_path_name = 'Atlantic_cod_life_table_lowCvf.xlsx';
+file_path_name = 'Atlantic_cod_life_table.xlsx';
 fprintf('Life table file: %s\n\n',file_path_name);
 
 % scaling factor to adjust population growth rate; 
@@ -68,8 +68,10 @@ elseif total_population_0 - total_pop_N < 0
      
 end
 
+population_0 = zeros(1,age_classes); population_0(1) = 1000;
+disp(population_0);
 % create the demographic matrix of population size for each age class over time
-age_dist_m = create_age_dist_m(number_generations, population_0, leslie_matrix, burn_in_gens); 
+[age_dist_m, burn_in_m,total_population_v,steady_state_total, steady_state_vector] = create_age_dist_m(number_generations, population_0, leslie_matrix, burn_in_gens,mod_lambda); 
 
 %% Sample lineages %%
 
@@ -238,32 +240,7 @@ fprintf('----------------------------------------------------\n');
 
 %Save entire workspace as a ".mat" file
 
-% output_filename = "/Users/BrettCotler/Desktop/Output_Data/atlantic_cod/lowCvf/constant_Atlantic_cod_lowCvf.mat";
-% save(output_filename);
+output_filename = "/Users/BrettCotler/Desktop/Output_Data/type1_life_table.mat";
+%save(output_filename);
 % 
 % 
-function [parent] = sample_lineage(age)
-
-
-    % sample one lineage given an age class and a generation
-    age = parent_age_class; % age of lineage to find
-    
-    generation = numgen - 1; % generation of lineage to find
-    
-    found_one = 0;
-    while found_one == 0
-
-        index = randi(total_pop_sizes(generation,1)); % get random integer 1:total population size at time numgen
-        
-        if pop_in_present(1,index) == age % lineage must be given age 
-            parent = index;
-            found_one = 1;
-        else
-            found_one = 0; % keep looking for age zero individual
-        end
-    end % while
-
-    disp(parent);
-    
-end
-
