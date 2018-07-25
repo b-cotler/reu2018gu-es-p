@@ -43,6 +43,8 @@ for k = 1:lineage_count
                 break %the loop is broken when an age is assigned
             end
         end
+    else
+    new_age = age(k);
     end
     indices(1,k) = options_lower(new_age+1) + round((options_upper(new_age+1)-options_lower(new_age+1))*rand);
     indices(2,k) = new_age;
