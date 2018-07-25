@@ -6,13 +6,13 @@ rng('shuffle'); % random seed for random number generator
 % declare main global variables for program
 total_pop_N = 1000; % size of population for all age classes
 
-number_generations = 10; % number of generations
+number_generations = 1500; % number of generations
 
-burn_in_gens = 10000; % number of generations for burn in of population growth
+burn_in_gens = 102; % number of generations for burn in of population growth
 
 lineage_count = 2; % number of lineages to sample to determine time to MRCA 
 
-iterations = 1; % number of iterations of sampling from population
+iterations = 15000; % number of iterations of sampling from population
 
 fprintf('----------------------------------------------------\n');
 fprintf('Simulation of time to MRCA in an age-structured coalescent\n\n');
@@ -68,8 +68,6 @@ elseif total_population_0 - total_pop_N < 0
      
 end
 
-population_0 = zeros(1,age_classes); population_0(1) = 1000;
-disp(population_0);
 % create the demographic matrix of population size for each age class over time
 [age_dist_m, burn_in_m,total_population_v,steady_state_total, steady_state_vector] = create_age_dist_m(number_generations, population_0, leslie_matrix, burn_in_gens,mod_lambda); 
 
