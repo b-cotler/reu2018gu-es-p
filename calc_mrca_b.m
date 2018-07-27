@@ -1,4 +1,4 @@
-function [mrca, complete_genealogy, coal_events, age_zero_counter] = calc_mrca_b(genealogy_m, leslie_matrix, age_dist_m)
+function [mrca, complete_genealogy, coal_events, age_zero_counter, total_multiple_mergers] = calc_mrca_b(genealogy_m, leslie_matrix, age_dist_m)
 
 %Inputs:
 %1. genealogy_m - a number_generations x lineage_count x 2 matrix. At the
@@ -49,6 +49,9 @@ time_count = 1;
 %create a counter for age zero individuals to better understand
 %polymorphism/mutation
 age_zero_counter = zeros(1,length(lineages)); 
+
+%all multiple mergers
+total_multiple_mergers = 0;
 
 for g = generations:-1:2 %iterate over the generations
     
@@ -130,6 +133,7 @@ for g = generations:-1:2 %iterate over the generations
                 %multiple merger condition
                 multiple_merger = multiple_merger+1;
                 if multiple_merger>1
+                    total_multiple_mergers = total_multiple_mergers+1;
                  for i = 1:length(lineages)
                      if isequal(lineages(i),s)
                          lineages(i) = [];

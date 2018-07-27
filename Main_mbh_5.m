@@ -10,7 +10,7 @@ number_generations = 2000; % number of generations
 
 burn_in_gens = 130; % number of generations for burn in of population growth
 
-lineage_count = 4; % number of lineages to sample to determine time to MRCA 
+lineage_count = 6; % number of lineages to sample to determine time to MRCA 
 
 iterations = 500; % number of iterations of sampling from population
 
@@ -98,7 +98,7 @@ for iter=1:iterations
 
     % Track the lineages to an MRCA
 
-    [mrca,complete_genealogy,coal_events,age_zero_counter] = calc_mrca_b(genealogy_m, leslie_matrix, age_dist_m);
+    [mrca,complete_genealogy,coal_events,age_zero_counter, total_multiple_mergers] = calc_mrca_b(genealogy_m, leslie_matrix, age_dist_m);
 
     if mrca == number_generations
         no_mrca_random = no_mrca_random + 1; % increment counter
@@ -169,7 +169,7 @@ for iter=1:iterations
 
     % Track the lineages to an MRCA
 
-    [mrca,complete_genealogy,coal_events, age_zero_counter] = calc_mrca_b(genealogy_m, leslie_matrix, age_dist_m);
+    [mrca,complete_genealogy,coal_events, age_zero_counter, total_multiple_mergers] = calc_mrca_b(genealogy_m, leslie_matrix, age_dist_m);
 
     if mrca == number_generations
         no_mrca_zero = no_mrca_zero + 1; % increment counter
@@ -294,7 +294,7 @@ fprintf('----------------------------------------------------\n');
 
 %Save entire workspace as a ".mat" file
 
-output_filename = "/Users/BrettCotler/Desktop/Output_Data/atlantic_cod_k3constant_cauchy.mat";
+output_filename = "/Users/BrettCotler/Desktop/Output_Data/atlantic_cod_k6constant_cauchy.mat";
 save(output_filename);
 % 
 % 
