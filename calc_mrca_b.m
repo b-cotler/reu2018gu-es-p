@@ -35,7 +35,7 @@ function [mrca, complete_genealogy, coal_events, age_zero_counter] = calc_mrca_b
 %Establish the dimensions of the genealogy matrix to set bounds for
 %iteration
 generations = size(genealogy_m,1); 
-lineages = 1:size(genealogy_m,2); 
+lineages = 1:size(genealogy_m,2);
 
 %Create a counter to record the number of coalescent events
 coal_count = 0;
@@ -83,7 +83,7 @@ for g = generations:-1:2 %iterate over the generations
             
          %choose an individual in the given population through random
          %number generation and assign it the corresponding age
-            genealogy_m(g-1,k,1) = options_lower(parent_age+1) + round((options_upper(parent_age+1)-options_lower(parent_age+1))*rand);
+            genealogy_m(g-1,k,1) = options_lower(parent_age+1) + round((options_upper(parent_age+1)-options_lower(parent_age+1))*(1/(1+(rand)^2)*1/pi));%for Cauchy replace rand with (1/(1+(rand)^2)*1/pi)
             genealogy_m(g-1,k,2) = parent_age; 
             
         %case where the individual is not a newborn and age-1 ancestor must be chosen
@@ -91,7 +91,7 @@ for g = generations:-1:2 %iterate over the generations
             %establish the age of the individual by thinking about the age
             %in the generation before. 
             age_old = genealogy_m(g,k,2); %set an age variable equal to the current age in lineage k            
-            genealogy_m(g-1,k,1) = options_lower(age_old) + round((options_upper(age_old)-options_lower(age_old))*rand); %choose a random individual in the age_old-1 generation
+            genealogy_m(g-1,k,1) = options_lower(age_old) + round((options_upper(age_old)-options_lower(age_old))*rand);  %choose a random individual in the age_old-1 generation
             genealogy_m(g-1,k,2) = age_old-1; %set the age of the individual in the previous generation
             
             %check to make sure the same individual hasn't been assigned
@@ -122,10 +122,29 @@ for g = generations:-1:2 %iterate over the generations
     
     %check for coalescent events, record and remove a lineage if a
     %coalescent event has occurred
-    for r = 1:length(lineages-1)
+    
+    multiple_merger = 0;
+    for r = 1:(length(lineages)-1)
         for s = r+1:length(lineages)
             if (isequal(genealogy_m(g-1,r,1), genealogy_m(g-1,s,1))) %if there is a coalescent event
+                %multiple merger condition
+                multiple_merger = multiple_merger+1;
+                if multiple_merger>1
+                 for i = 1:length(lineages)
+                     if isequal(lineages(i),s)
+                         lineages(i) = [];
+                         break
+                     end
+                 end
+                else
+%                 disp("lineage being removed");
+%                 disp(s);
+%                 disp("lineages vector");
+%                 disp(lineages);
+%                 disp("lineages length");
+%                 disp(length(lineages));
                 lineages(s)=[]; %remove the later lineage
+                end
                 coal_count = coal_count+1; %add to the number of coal events
                 coal_events(coal_count,:) = [s r time_count]; %add to coal events matrix
             end

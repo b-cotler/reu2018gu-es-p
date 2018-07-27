@@ -4,15 +4,15 @@
 rng('shuffle'); % random seed for random number generator
 
 % declare main global variables for program
-total_pop_N = 1000; % size of population for all age classes
+total_pop_N = 500; % size of population for all age classes
 
-number_generations = 1500; % number of generations
+number_generations = 2000; % number of generations
 
-burn_in_gens = 102; % number of generations for burn in of population growth
+burn_in_gens = 130; % number of generations for burn in of population growth
 
-lineage_count = 2; % number of lineages to sample to determine time to MRCA 
+lineage_count = 4; % number of lineages to sample to determine time to MRCA 
 
-iterations = 15000; % number of iterations of sampling from population
+iterations = 500; % number of iterations of sampling from population
 
 fprintf('----------------------------------------------------\n');
 fprintf('Simulation of time to MRCA in an age-structured coalescent\n\n');
@@ -84,6 +84,10 @@ mutation_m_random = zeros(lineage_count+1,iterations); %create a matrix to recor
 
 random_mutation_avg = zeros(1,lineage_count); %create a vector to measure weighted average of mutation opportunities
 
+first_coal_event_random = zeros(iterations,3); %create a matrix to keep track of the first coalescent event that occurs (to be used when K>2)
+first_coal_event_random_data = zeros(iterations,1);
+no_first_coal_random = 0;
+
 for iter=1:iterations
 
     initial_values = terminal_indices(lineage_count,age_dist_m,age_i); % samples lineage from all lineages in the present. 
@@ -102,6 +106,14 @@ for iter=1:iterations
         mrca_random(1,iter) = mrca;
         
     end
+    
+    first_coal_event_random(iter,:) = coal_events(1,:); %take the first coalescent event that occurs from the coalescent events matrix
+    if isequal(first_coal_event_random(iter,3), -1)
+        no_first_coal_random = no_first_coal_random+1;
+    else
+        first_coal_event_random_data(iter) = first_coal_event_zero(iter,3);
+    end
+    
     % accumulate mutation opportunities and weight by mrca
     mutation_m_random(1:lineage_count,iter) = age_zero_counter; 
     mutation_m_random(end, iter) = mrca;
@@ -142,6 +154,9 @@ mrca_zero = zeros(1,iterations); % allocate space for results
 
 mutation_m_zero = zeros(lineage_count+1, iterations);
 zero_mutation_avg = zeros(1,lineage_count); %create a vector to measure weighted average of mutation opportunities
+first_coal_event_zero = zeros(iterations,3); %create a matrix to keep track of the first coalescent event that occurs (to be used when K>2)
+first_coal_event_zero_data = zeros(iterations,1);
+no_first_coal_zero = 0;
 
 for iter=1:iterations
 
@@ -161,6 +176,15 @@ for iter=1:iterations
     else
         mrca_zero(1,iter) = mrca;
     end
+    
+    first_coal_event_zero(iter,:) = coal_events(1,:); %take the first coalescent event that occurs from the coal_events matrix
+    if isequal(first_coal_event_zero(iter,3), -1)
+        no_first_coal_zero = no_first_coal_zero+1;
+    else
+        first_coal_event_zero_data(iter) = first_coal_event_zero(iter,3);
+    end
+        
+        
     
     mutation_m_zero(1:lineage_count,iter) = age_zero_counter;
     mutation_m_zero(end, iter) = mrca;
@@ -204,6 +228,7 @@ end % for iter
 %    savefig('histogram_growing_Atlantic_cod_highCvf.fig');
     
     figure;
+    
     hold on;
     subplot(1,2,1);
     boxplot(mrca_zero(1,1:num_non_zero_sims_zero), 'Labels',{'age zero lineage pairs'});
@@ -213,6 +238,37 @@ end % for iter
     hold off;
 
 %    savefig('boxplot_growing_Atlantic_cod_highCvf.fig');
+
+%BREAK
+
+%     figure;
+% 
+%     hold on;
+%     subplot(2,1,1);
+%     hist(first_coal_event_random_data(1:(iterations-no_first_coal_random),1)); 
+%     xlabel('time to MRCA - random lineage pairs')
+%     ylabel('Count')
+% 
+%     subplot(2,1,2);
+%     hist(first_coal_event_zero_data(1:(iterations-no_first_coal_zero),1)); 
+%     xlabel('time to MRCA - age zero lineage pairs')
+%     ylabel('Count')
+% 
+%     suptitle('Distributions of coalescence times');
+%     hold off;
+%     
+% %    savefig('histogram_growing_Atlantic_cod_highCvf.fig');
+%     
+%     figure;
+%     hold on;
+%     subplot(1,2,1);
+%     boxplot(first_coal_event_zero_data(1:(iterations-no_first_coal_zero),1), 'Labels',{'age zero lineage pairs'});
+%     
+%     subplot(1,2,2);
+%     boxplot(first_coal_event_random_data(1:(iterations-no_first_coal_random),1), 'Labels',{'random age lineage pairs'});
+%     hold off;
+% 
+% %    savefig('boxplot_growing_Atlantic_cod_highCvf.fig');
 
     fprintf('Summary of simulation:\n\n');
         
@@ -238,7 +294,7 @@ fprintf('----------------------------------------------------\n');
 
 %Save entire workspace as a ".mat" file
 
-output_filename = "/Users/BrettCotler/Desktop/Output_Data/type1_life_table.mat";
-%save(output_filename);
+output_filename = "/Users/BrettCotler/Desktop/Output_Data/atlantic_cod_k3constant_cauchy.mat";
+save(output_filename);
 % 
 % 
